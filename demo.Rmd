@@ -13,4 +13,8 @@ library(tidyverse)
 ## Load Data
 
 
+```{r}
+disgust <- read_csv("https://github.com/debruine/ishe2019/raw/master/data/disgust.csv")
+```
+
 

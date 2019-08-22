@@ -15,6 +15,24 @@ library(tidyverse)
 
 ```{r}
 disgust <- read_csv("https://github.com/debruine/ishe2019/raw/master/data/disgust.csv")
+
+users <- read_csv("https://github.com/debruine/ishe2019/raw/master/data/users.csv")
+
 ```
 
+## Merge data
+
+Write some notes.
+
+
+```{r}
+data <- left_join(disgust, users, by = "user_id") %>%
+  filter(sex %in% c("male", "female")) %>%
+  gather(question, score, moral1:pathogen7) %>%
+  separate(question, c("domain", "n"), sep = -1) %>%
+  group_by(domain, user_id, sex)  %>%
+  summarise(sum_score = mean(score, na.rm = FALSE))
+
+
+```
 

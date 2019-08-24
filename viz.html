@@ -1582,7 +1582,52 @@ div.tocify {
 </div>
 
 
+<div id="load-and-process-data" class="section level2">
+<h2>Load and Process Data</h2>
+<pre class="r"><code>disgust &lt;- read_csv(&quot;https://github.com/debruine/ishe2019/raw/master/data/disgust.csv&quot;)
+users &lt;- read_csv(&quot;https://github.com/debruine/ishe2019/raw/master/data/users.csv&quot;)
 
+data &lt;- left_join(disgust, users, by = &quot;user_id&quot;) %&gt;%
+  filter(sex %in% c(&quot;male&quot;, &quot;female&quot;)) %&gt;%
+  gather(question, score, moral1:pathogen7) %&gt;%
+  separate(question, c(&quot;domain&quot;, &quot;n&quot;), sep = -1) %&gt;%
+  group_by(domain, user_id, sex)  %&gt;%
+  summarise(sum_score = sum(score, na.rm = FALSE)) %&gt;%
+  ungroup()</code></pre>
+</div>
+<div id="plot-the-data" class="section level2">
+<h2>Plot the data</h2>
+<div id="histogram" class="section level3">
+<h3>Histogram</h3>
+</div>
+<div id="density" class="section level3">
+<h3>Density</h3>
+</div>
+<div id="freqpoly" class="section level3">
+<h3>Freqpoly</h3>
+</div>
+<div id="boxplot" class="section level3">
+<h3>Boxplot</h3>
+</div>
+<div id="violinbox" class="section level3">
+<h3>Violinbox</h3>
+</div>
+<div id="pointscatter" class="section level3">
+<h3>Point/Scatter</h3>
+</div>
+<div id="line-graph" class="section level3">
+<h3>Line Graph</h3>
+</div>
+<div id="heatmaps" class="section level3">
+<h3>Heatmaps</h3>
+</div>
+<div id="combo-plots" class="section level3">
+<h3>Combo plots</h3>
+</div>
+<div id="interactive-plots" class="section level3">
+<h3>Interactive plots</h3>
+</div>
+</div>
 
 
 

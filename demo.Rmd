@@ -77,7 +77,8 @@ data <- left_join(disgust, users, by = "user_id") %>%
   gather(question, score, moral1:pathogen7) %>%
   separate(question, c("domain", "n"), sep = -1) %>%
   group_by(domain, user_id, sex)  %>%
-  summarise(sum_score = sum(score, na.rm = FALSE))
+  summarise(sum_score = sum(score, na.rm = FALSE)) %>%
+  ungroup()
 
 ```
 

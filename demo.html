@@ -1624,7 +1624,8 @@ aggregated_data &lt;- summarise(grouped_data, sum_score = sum(score, na.rm = FAL
   gather(question, score, moral1:pathogen7) %&gt;%
   separate(question, c(&quot;domain&quot;, &quot;n&quot;), sep = -1) %&gt;%
   group_by(domain, user_id, sex)  %&gt;%
-  summarise(sum_score = sum(score, na.rm = FALSE))</code></pre>
+  summarise(sum_score = sum(score, na.rm = FALSE)) %&gt;%
+  ungroup()</code></pre>
 </div>
 </div>
 <div id="plot-the-data" class="section level2">

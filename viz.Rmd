@@ -12,6 +12,88 @@ output:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 library(tidyverse) # loads packages for data manipulation (dplyr/tidyr) and visualisation (ggplot2)
+library(cowplot)  # optional, lets you make composite graphs
+library(plotly)   # optional, interactive graphs
 library(ggthemes) # optional, lets you change themes
 ```
+
+## Load and Process Data
+
+```{r}
+disgust <- read_csv("https://github.com/debruine/ishe2019/raw/master/data/disgust.csv")
+users <- read_csv("https://github.com/debruine/ishe2019/raw/master/data/users.csv")
+
+data <- left_join(disgust, users, by = "user_id") %>%
+  filter(sex %in% c("male", "female")) %>%
+  gather(question, score, moral1:pathogen7) %>%
+  separate(question, c("domain", "n"), sep = -1) %>%
+  group_by(domain, user_id, sex)  %>%
+  summarise(sum_score = sum(score, na.rm = FALSE)) %>%
+  ungroup()
+```
+
+## Plot the data
+
+### Histogram
+
+```{r}
+
+```
+
+### Density
+
+```{r}
+
+```
+
+### Freqpoly
+
+```{r}
+
+```
+
+### Boxplot
+
+```{r}
+
+```
+
+### Violinbox
+
+```{r}
+
+```
+
+### Point/Scatter
+
+```{r}
+
+```
+
+
+### Line Graph
+
+```{r}
+
+```
+
+### Heatmaps
+
+```{r}
+
+```
+
+### Combo plots
+
+```{r}
+
+```
+
+
+### Interactive plots
+
+```{r}
+
+```
+
 

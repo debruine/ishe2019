@@ -1,8 +1,9 @@
 ## Resources
 
-* [Data Skills for Reproducible Science](https://psyteachr.github.io/msc-data-skills/)
+[Data Skills for Reproducible Science](https://psyteachr.github.io/msc-data-skills/)  has 10 chapters with exercises taking you from installing R to creating reproducible scripts in RMarkdown.
+
 * [Visualisation Chapter](https://psyteachr.github.io/msc-data-skills/ggplot.html)
-* [ggplot cheatsheet](https://github.com/rstudio/cheatsheets/raw/master/data-visualization-2.1.pdf)
+* [ggplot cheatsheet](https://github.com/rstudio/cheatsheets/raw/master/data-visualization-2.1.pdf) 
 
 ## Setup
 

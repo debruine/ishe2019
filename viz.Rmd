@@ -11,6 +11,7 @@ output:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+
 library(tidyverse) # loads packages for data manipulation (dplyr/tidyr) and visualisation (ggplot2)
 library(cowplot)  # optional, lets you make composite graphs
 library(plotly)   # optional, interactive graphs
@@ -18,6 +19,8 @@ library(ggthemes) # optional, lets you change themes
 ```
 
 ## Load and Process Data
+
+Write stuff about your data..
 
 ```{r}
 disgust <- read_csv("https://github.com/debruine/ishe2019/raw/master/data/disgust.csv")
@@ -37,55 +40,102 @@ data <- left_join(disgust, users, by = "user_id") %>%
 ### Histogram
 
 ```{r}
-
+ggplot(data, aes(x = sum_score, fill = domain)) +
+  geom_histogram(binwidth = 1, colour = "grey", 
+                 show.legend = FALSE) +
+  facet_grid(domain~sex)
 ```
 
 ### Density
 
 ```{r}
-
+ggplot(data, aes(x = sum_score, 
+                 colour = domain, 
+                 fill = domain)) +
+  geom_density(alpha = 0.5) + 
+  theme_clean() +
+  scale_colour_manual(values = c("dodgerblue", "darkgreen", "red")) +
+  scale_fill_manual(values = c("dodgerblue", "darkgreen", "red"))
 ```
 
 ### Freqpoly
 
 ```{r}
-
+ggplot(data, aes(x = sum_score, 
+                 colour = domain, 
+                 fill = domain)) +
+  geom_freqpoly(alpha = 0.5, binwidth = 1) + 
+  theme_clean() +
+  scale_colour_manual(values = c("dodgerblue", "darkgreen", "red")) +
+  scale_fill_manual(values = c("dodgerblue", "darkgreen", "red"))
 ```
 
 ### Boxplot
 
 ```{r}
-
+ggplot(data, aes(x = domain, y = sum_score, fill = domain)) +
+  geom_boxplot(show.legend = FALSE) +
+  facet_grid(~sex) +
+  xlab("") +
+  ylab("Sum Score") +
+  ggtitle("Sex Differences in Disgust")
 ```
 
 ### Violinbox
 
 ```{r}
-
+ggplot(data, aes(x = domain, y = sum_score, fill = domain)) +
+  geom_violin(show.legend = FALSE, fill = "white") + 
+  geom_boxplot(show.legend = FALSE, width = .2) +
+  facet_grid(~sex) +
+  xlab("") +
+  ylab("Sum Score") +
+  ggtitle("Sex Differences in Disgust")
 ```
 
 ### Point/Scatter
 
 ```{r}
+data_wide <- spread(data, domain, sum_score)
 
+p <- sample_n(data_wide, 100) %>%
+  ggplot(aes(x = moral, y = sexual, colour = sex)) +
+  geom_point() +
+  geom_smooth(method = lm, se = FALSE)
+
+ggplotly(p)
 ```
 
-
-### Line Graph
+### Line Graphs
 
 ```{r}
-
+data_wide %>%
+  ggplot(aes(x = moral, y = sexual, colour = sex)) +
+  geom_point(alpha = 0.05) +
+  geom_smooth(method = lm, se = TRUE)
 ```
+
 
 ### Heatmaps
 
 ```{r}
-
+ggplot(data_wide, aes(x = pathogen, y = sexual)) +
+  geom_bin2d(binwidth = 1, drop = FALSE) +
+  scale_fill_viridis_c()
 ```
 
 ### Combo plots
 
 ```{r}
+pathogen_sex_plot <- ggplot(data_wide, 
+                            aes(x = pathogen, y = sexual)) +
+  geom_smooth(method = lm)
+
+pathogen_moral_plot <- ggplot(data_wide, 
+                            aes(x = pathogen, y = moral)) +
+  geom_smooth(method = lm)
+
+plot_grid(pathogen_sex_plot, pathogen_moral_plot)
 
 ```
 

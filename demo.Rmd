@@ -2,12 +2,15 @@
 title: "ISHE Demo"
 author: "Lisa"
 date: "22/08/2019"
-output: html_document
+output: 
+  html_document:
+    toc: true
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
+library(ggthemes)
 ```
 
 ## Load Data
@@ -31,8 +34,32 @@ data <- left_join(disgust, users, by = "user_id") %>%
   gather(question, score, moral1:pathogen7) %>%
   separate(question, c("domain", "n"), sep = -1) %>%
   group_by(domain, user_id, sex)  %>%
-  summarise(sum_score = mean(score, na.rm = FALSE))
+  summarise(sum_score = sum(score, na.rm = FALSE))
+
+```
+
+## Plot the data
+
+```{r}
+ggplot(data, aes(x = domain, y = sum_score, color = domain)) +
+  #geom_histogram(binwidth= 1, colour = "grey", show.legend = FALSE) +
+  #geom_density(alpha = .5) +
+  geom_violin() +
+  geom_boxplot(aes(fill = domain), color = "black", width = .2) +
+  facet_grid(sex~.) +
+  theme_bw() +
+  scale_color_manual(values = c("red", "darkgreen", "dodgerblue"))
+```
 
 
+
+```{r, warning = FALSE}
+data_wide <- data %>%
+  spread(domain, sum_score)
+
+ggplot(data_wide) +
+  #geom_point(aes(x = moral, y = sexual), alpha = 0.1) +
+  geom_smooth(aes(x = moral, y = sexual), method = lm, color = "dodgerblue") +
+  geom_smooth(aes(x = moral, y = pathogen), method = lm, color = "green")
 ```
 

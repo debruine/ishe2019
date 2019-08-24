@@ -1,20 +1,21 @@
 ---
-title: "ISHE Demo"
+title: "ISHE R Workshop: Friday"
 author: "Lisa"
 date: "22/08/2019"
 output: 
   html_document:
     toc: true
+    toc_float: true
+    code_folding: show
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-library(tidyverse)
-library(ggthemes)
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+library(tidyverse) # loads packages for data manipulation (dplyr/tidyr) and visualisation (ggplot2)
+library(ggthemes) # optional, lets you change themes
 ```
 
 ## Load Data
-
 
 ```{r}
 disgust <- read_csv("https://github.com/debruine/ishe2019/raw/master/data/disgust.csv")
@@ -23,10 +24,52 @@ users <- read_csv("https://github.com/debruine/ishe2019/raw/master/data/users.cs
 
 ```
 
-## Merge data
+## Process data
 
-Write some notes.
+### Merge tables
 
+```{r}
+joined_data <- left_join(disgust, users, by = "user_id")
+```
+
+### Filter
+
+Select only rows where sex is either "male" or "female"
+
+```{r}
+filtered_data <- filter(joined_data, sex %in% c("male", "female"))
+```
+
+### Wide to long format
+
+Transform from 1 row per subject and 21 questions per row, to one question:subject per row
+
+```{r}
+long_data <- gather(filtered_data, question, score, moral1:pathogen7)
+```
+
+### Separate a column
+
+The new "question" column is n the format "domain#". Split thisinto two columns for "domain" and "n".
+
+```{r}
+separated_data <- separate(long_data, question, c("domain", "n"), sep = -1)
+```
+
+### Summarise
+
+Group by domain and user_id to calculate the sum of the 7 items within each domain for each subject.
+
+```{r}
+grouped_data <- group_by(separated_data, domain, user_id, sex)
+
+aggregated_data <- summarise(grouped_data, sum_score = sum(score, na.rm = FALSE))
+
+```
+
+### The Pipe
+
+Or you can do this all in one step by [piping](https://psyteachr.github.io/msc-data-skills/tidyr.html#pipes). The pipe sends the results of the last function to the first argument of the next function. Remember to remove the first argument of the function when converting from separate functions to piped functions.
 
 ```{r}
 data <- left_join(disgust, users, by = "user_id") %>%
@@ -40,10 +83,32 @@ data <- left_join(disgust, users, by = "user_id") %>%
 
 ## Plot the data
 
+### Histogram
+
+```{r}
+ggplot(data, aes(x = sum_score, fill = domain)) +
+  geom_histogram(binwidth= 1, colour = "grey", show.legend = FALSE) +
+  facet_grid(sex~domain) +
+  theme_bw() +
+  scale_fill_manual(values = c("red", "darkgreen", "dodgerblue"))
+```
+
+### Density plot
+
+```{r}
+ggplot(data, aes(x = sum_score, color = domain)) +
+  geom_density(alpha = .5) +
+  facet_grid(sex~.) +
+  ggthemes::theme_few() +
+  scale_color_manual(values = c("red", "darkgreen", "dodgerblue")) +
+  theme(legend.position = c(.1,.85),
+        legend.background = element_blank())
+```
+
+### Violin-box Plot
+
 ```{r}
 ggplot(data, aes(x = domain, y = sum_score, color = domain)) +
-  #geom_histogram(binwidth= 1, colour = "grey", show.legend = FALSE) +
-  #geom_density(alpha = .5) +
   geom_violin() +
   geom_boxplot(aes(fill = domain), color = "black", width = .2) +
   facet_grid(sex~.) +
@@ -51,15 +116,64 @@ ggplot(data, aes(x = domain, y = sum_score, color = domain)) +
   scale_color_manual(values = c("red", "darkgreen", "dodgerblue"))
 ```
 
-
+Change the shape of the data from long to wide.
 
 ```{r, warning = FALSE}
 data_wide <- data %>%
   spread(domain, sum_score)
+```
 
+### Line plots
+
+```{r}
 ggplot(data_wide) +
-  #geom_point(aes(x = moral, y = sexual), alpha = 0.1) +
   geom_smooth(aes(x = moral, y = sexual), method = lm, color = "dodgerblue") +
   geom_smooth(aes(x = moral, y = pathogen), method = lm, color = "green")
+```
+
+### Point plot
+
+Change opacity (alpha) if there are overlapping points
+
+```{r}
+ggplot(data_wide, aes(x = moral, y = sexual)) +
+  geom_point(alpha = 0.05)
+```
+
+### Contour map
+
+```{r}
+ggplot(data_wide, aes(x = moral, y = sexual)) +
+  geom_density2d()
+```
+
+### Heatmap
+
+This is another way to represent densely overlapping data
+
+```{r, fig.width = 10, fig.height = 5, output.width = 5, fig.align='center', fig.cap='Set figure display options in the code chunk.'}
+ggplot(data_wide, aes(x = moral, y = sexual)) +
+  geom_bin2d(binwidth = 1, drop = FALSE) + # set drop = TRUE to leave cells with 0 count blank
+  scale_fill_viridis_c() # use the continuous viridis colour palette
+```
+
+
+
+## Save the plot
+
+Make a folder called "fig" in your project directory and save the last image you created there.
+
+```{r}
+ggsave("fig/wideplot.png", width = 10, height = 5)
+
+ggsave("fig/tallplot.png", width = 5, height = 10)
+```
+
+```{r, results="asis", output.width = 3, fig.align = 'center', echo = FALSE}
+knitr::include_graphics("fig/wideplot.png", dpi = 300)
+```
+
+```{r, results="asis", output.width = 3, fig.align = 'center', echo = FALSE}
+knitr::include_graphics("fig/tallplot.png", dpi = 300)
 ```
 

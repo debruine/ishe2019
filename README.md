@@ -16,10 +16,10 @@ Install [R and RStudio](https://psyteachr.github.io/msc-data-skills/installingr.
 Install these packages after you install R and RStudio.
 
 ```
-install.packages(tidyverse) # required
-install.packages(cowplot)   # optional
-install.packages(plotly)    # optional
-install.packages(ggthemes)  # optional
+install.packages("tidyverse") # required
+install.packages("cowplot")   # optional
+install.packages("plotly")    # optional
+install.packages("ggthemes")  # optional
 ```
 
 ## Data for this class
